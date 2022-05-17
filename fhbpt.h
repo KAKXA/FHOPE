@@ -5,46 +5,37 @@ struct internal_node_t {
     const bool node_attr = INTERNAL;
     // internal_node_t* parent;
 
+    size_t imax = 0;
     node_t* parent;
-    kwd_t* kwds;
-    node_t* children;
+    kwd_t kwds[MAX_NODE_SIZE + 1];
+    node_t* children[MAX_NODE_SIZE + 1];
 
-    internal_node_t() {
-        this->kwds = new kwd_t[IMAX];
-        this->children = (node_t*) new leaf_t[IMAX];
-    };
+    internal_node_t() {};
     internal_node_t(node_t* parent) {
         this->parent = parent;
-        this->kwds = new kwd_t[IMAX];
-        this->children = (node_t*) new leaf_t[IMAX];
     };
 };
 
 struct leaf_t {
     const bool node_attr = LEAF;
+    
+    size_t imax = 0;
     node_t* parent;
-    ct_t* cts;
-    cd_t* cds;
+    ct_t cts[MAX_NODE_SIZE + 1];
+    cd_t cds[MAX_NODE_SIZE + 1];
     leaf_t* lbro;
     leaf_t* rbro;
     cd_t lower;
     cd_t upper;
-    leaf_t() {
-        cts = new ct_t[IMAX];
-        cds = new cd_t[IMAX];
-    };
+    leaf_t() {};
     leaf_t(cd_t lower, cd_t upper) {
         this->lower = lower;
         this->upper = upper;
-        cts = new ct_t[IMAX];
-        cds = new cd_t[IMAX];
     }
     leaf_t(cd_t lower, cd_t upper, node_t* parent) {
         this->lower = lower;
         this->upper = upper;
         this->parent = parent;
-        cts = new ct_t[IMAX];
-        cds = new cd_t[IMAX];
     }
 };
 

@@ -4,7 +4,7 @@
 #include <string.h>
 #include <string>
 
-#define IMAX 8
+#define MAX_NODE_SIZE 8
 #define INTERNAL true
 #define LEAF false
 #define DEFAULT_LOWER -1
