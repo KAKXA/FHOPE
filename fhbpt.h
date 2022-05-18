@@ -2,6 +2,13 @@
 #include "predefined.h"
 #include <map>
 
+#define MAX_NODE_SIZE 3
+#define INTERNAL true
+#define LEAF false
+#define DEFAULT_LOWER -2
+#define DEFAULT_UPPER 1
+#define INVAL 0
+
 struct internal_node_t;
 struct node_t {
     bool node_attr;
