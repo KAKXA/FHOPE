@@ -4,7 +4,7 @@
 #include <string.h>
 #include <string>
 
-#define MAX_NODE_SIZE 8
+#define MAX_NODE_SIZE 3
 #define INTERNAL true
 #define LEAF false
 #define DEFAULT_LOWER -2
@@ -16,6 +16,7 @@ typedef std::string ct_t;
 typedef int cd_t;
 typedef unsigned int pos_t;
 
+namespace bpt {
 typedef int value_t;
 
 struct key_t {
@@ -50,5 +51,7 @@ inline int keycmp(const key_t &a, const key_t &b) {
     bool operator== (const type &l, const key_t &r) {\
         return keycmp(l.key, r) == 0;\
     }
+
+}
 
 #endif /* end of PREDEFINED_H */

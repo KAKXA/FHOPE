@@ -1,5 +1,12 @@
 #include <stdio.h>
 #include "predefined.h"
+#include <map>
+
+struct internal_node_t;
+struct node_t {
+    bool node_attr;
+    internal_node_t* parent;
+};
 
 struct internal_node_t {
     const bool node_attr = INTERNAL;
@@ -12,6 +19,13 @@ struct internal_node_t {
     internal_node_t(node_t* parent) {
         this->parent = parent;
     };
+    std::string toString() {
+        std::string s = "(";
+        for(int i = 0; i < imax; ++i) {
+            s += std::to_string(kwds[i]) + " ";
+        }
+        return s + ")";
+    }
 };
 
 struct leaf_t {
@@ -34,19 +48,21 @@ struct leaf_t {
         this->upper = upper;
         this->parent = parent;
     }
-};
-
-
-struct node_t {
-    bool node_attr;
-    internal_node_t* parent;
+    std::string toString() {
+        std::string s = "(";
+        for(int i = 0; i < imax; ++i) {
+            s += cts[i] + "," + std::to_string(cds[i]) + " ";
+        }
+        return s + ")";
+    }
 };
 
 class fhbpt {
     public:
     fhbpt();
     cd_t getCode(pos_t pos);
-    void insert(pos_t, ct_t);
+    void insert(pos_t pos, ct_t ct);
+    std::string traverse();
     private:
     node_t* root;
 
@@ -58,4 +74,5 @@ class fhbpt {
     // return cd, lower, upper
     cd_t* insert_(node_t* node, pos_t pos, ct_t ct);
     void rebalance_(node_t* node);
+    std::string traverse_();
 };
