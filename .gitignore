@@ -1,1 +1,4 @@
-.vscode/
+*
+!*.cpp
+test.cpp
+!*.h
