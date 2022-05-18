@@ -3,10 +3,8 @@
 
 struct internal_node_t {
     const bool node_attr = INTERNAL;
-    // internal_node_t* parent;
-
-    size_t imax = 0;
     node_t* parent;
+    size_t imax = 0;
     kwd_t kwds[MAX_NODE_SIZE + 1];
     node_t* children[MAX_NODE_SIZE + 1];
 
@@ -18,9 +16,8 @@ struct internal_node_t {
 
 struct leaf_t {
     const bool node_attr = LEAF;
-    
-    size_t imax = 0;
     node_t* parent;
+    size_t imax = 0;
     ct_t cts[MAX_NODE_SIZE + 1];
     cd_t cds[MAX_NODE_SIZE + 1];
     leaf_t* lbro;
@@ -42,6 +39,7 @@ struct leaf_t {
 
 struct node_t {
     bool node_attr;
+    internal_node_t* parent;
 };
 
 class fhbpt {

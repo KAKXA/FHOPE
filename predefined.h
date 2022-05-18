@@ -7,8 +7,8 @@
 #define MAX_NODE_SIZE 8
 #define INTERNAL true
 #define LEAF false
-#define DEFAULT_LOWER -1
-#define DEFAULT_UPPER -1
+#define DEFAULT_LOWER -2
+#define DEFAULT_UPPER 1
 #define INVAL 0
 
 typedef unsigned int kwd_t;

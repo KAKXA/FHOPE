@@ -71,7 +71,7 @@ cd_t fhbpt::getCode_(node_t* node_, pos_t pos) {
     } else {
         internal_node_t* node = (internal_node_t*) node_;
         int i;
-        for(i = 0; i < node->imax && pos > ((internal_node_t*) node)->kwds[i]; ++i) {
+        for(i = 0; i < node->imax && pos > node->kwds[i]; ++i) {
             pos = pos - node->kwds[i];
         }
         return getCode_(node->children[i], pos);
@@ -87,6 +87,7 @@ cd_t* fhbpt::insert_(node_t* node_, pos_t pos, ct_t ct) {
             node->cds[i + 1] = node->cds[i];
         }
         node->cts[pos] = ct;
+        node->imax++;
 
         cd_t* clu = encode_(node, pos);
         if (node->imax > MAX_NODE_SIZE) {
@@ -102,5 +103,80 @@ cd_t* fhbpt::insert_(node_t* node_, pos_t pos, ct_t ct) {
             pos -= node->kwds[i];
         }
         return insert_(node->children[i], pos, ct);
+    }
+}
+
+void fhbpt::rebalance_(node_t* node_) {
+    int newNodeImax = (MAX_NODE_SIZE / 2);
+    int nodeSubTreeSize = 0;
+    int newNodeSubTreeSize = 0;
+    node_t* resNode, * resNewNode;
+    if (node_->node_attr == LEAF) {
+        leaf_t* node = (leaf_t*) node_;
+        int newNodeStartIndex = node->imax - newNodeImax;
+        cd_t oldNodeUpper = node->cds[newNodeStartIndex - 1];
+        cd_t newNodeLower = oldNodeUpper;
+        cd_t newNodeUpper = node->upper;
+        leaf_t* rightBro = node->rbro;
+
+        leaf_t* newNode = new leaf_t(newNodeLower, newNodeUpper, node->parent);
+        node->imax -= newNodeImax;
+        newNode->imax = newNodeImax;
+        memcpy(newNode->cds, node->cds + newNodeStartIndex, newNodeImax * sizeof(cd_t));
+        memcpy(newNode->cts, node->cts + newNodeStartIndex, newNodeImax * sizeof(ct_t));
+        node->rbro = newNode;
+        newNode->lbro = node;
+        newNode->rbro = rightBro;
+        node->upper = oldNodeUpper;
+
+        nodeSubTreeSize = node->imax;
+        newNodeSubTreeSize = newNode->imax;
+
+        resNode = (node_t*) node;
+        resNewNode = (node_t*) newNode;
+    } else {
+        internal_node_t* node = (internal_node_t*) node_;
+        int newNodeStartIndex = node->imax - newNodeImax;
+
+        internal_node_t* newNode = new internal_node_t(node->parent);
+        node->imax -= newNodeImax;
+        newNode->imax = newNodeImax;
+        memcpy(newNode->kwds, node->kwds + newNodeStartIndex, newNodeImax * sizeof(kwd_t));
+        memcpy(newNode->children, node->children + newNodeStartIndex, newNodeImax * sizeof(node_t*));
+
+        for(int i = 0; i < node->imax; ++i) {
+            nodeSubTreeSize += node->kwds[i];
+        }
+        for(int i = 0; i < newNode->imax; ++i) {
+            newNodeSubTreeSize += newNode->kwds[i];
+        }
+        resNode = (node_t*) node;
+        resNewNode = (node_t*) newNode;
+    }
+
+    if (!node_->parent) {
+        internal_node_t* root = new internal_node_t();
+        root->imax = 1;
+        root->kwds[0] = nodeSubTreeSize;
+        root->children[0] = resNode;
+        resNode->parent = root;
+    }
+
+    internal_node_t* parent = resNode->parent;
+    int nodeIndex;
+    for(nodeIndex = 0; nodeIndex < parent->imax; ++nodeIndex) {
+        if (parent->children[nodeIndex] == resNode) {
+            break;
+        }
+    }
+
+    parent->imax++;
+    memcpy(parent->kwds + nodeIndex + 2, parent->kwds + nodeIndex + 1, (parent->imax - nodeIndex - 1) * sizeof(kwd_t));
+    memcpy(parent->children + nodeIndex + 2, parent->children + nodeIndex + 1, (parent->imax - nodeIndex - 1) * sizeof(node_t*));
+    parent->kwds[nodeIndex + 1] = newNodeSubTreeSize;
+    parent->children[nodeIndex + 1] = resNewNode;
+
+    if (parent->imax > MAX_NODE_SIZE) {
+        rebalance_((node_t*)parent);
     }
 }
