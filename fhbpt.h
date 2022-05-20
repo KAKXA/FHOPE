@@ -1,8 +1,11 @@
+#ifndef FHBPT_H
+#define FHBPT_H
+
 #include <stdio.h>
 #include "predefined.h"
 #include <map>
 
-#define MAX_NODE_SIZE 3
+#define MAX_NODE_SIZE 4
 #define INTERNAL true
 #define LEAF false
 #define DEFAULT_LOWER -2
@@ -83,3 +86,5 @@ class fhbpt {
     void rebalance_(node_t* node);
     std::string traverse_();
 };
+
+#endif

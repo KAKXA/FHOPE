@@ -93,9 +93,9 @@ cd_t* fhbpt::insert_(node_t* node_, pos_t pos, ct_t ct) {
     if (node_->node_attr == LEAF) {
         leaf_t* node = (leaf_t*) node_;
 
-        for(int i = pos; i < node->imax; ++i) {
-            node->cts[i + 1] = node->cts[i];
-            node->cds[i + 1] = node->cds[i];
+        for(int i = node->imax; i > pos; --i) {
+            node->cts[i] = node->cts[i - 1];
+            node->cds[i] = node->cds[i - 1];
         }
         node->cts[pos] = ct;
         node->imax++;
@@ -134,8 +134,10 @@ void fhbpt::rebalance_(node_t* node_) {
         leaf_t* newNode = new leaf_t(newNodeLower, newNodeUpper);
         node->imax -= newNodeImax;
         newNode->imax = newNodeImax;
-        memcpy(newNode->cds, node->cds + newNodeStartIndex, newNodeImax * sizeof(cd_t));
-        memcpy(newNode->cts, node->cts + newNodeStartIndex, newNodeImax * sizeof(ct_t));
+        for(int i = 0; i < newNodeImax; ++i) {
+            newNode->cds[i] = node->cds[i + newNodeStartIndex];
+            newNode->cts[i] = node->cts[i + newNodeStartIndex];
+        }
         node->rbro = newNode;
         newNode->lbro = node;
         newNode->rbro = rightBro;
@@ -146,6 +148,7 @@ void fhbpt::rebalance_(node_t* node_) {
 
         resNode = (node_t*) node;
         resNewNode = (node_t*) newNode;
+
     } else {
         internal_node_t* node = (internal_node_t*) node_;
         int newNodeStartIndex = node->imax - newNodeImax;
@@ -186,15 +189,23 @@ void fhbpt::rebalance_(node_t* node_) {
         }
     }
 
+    if (nodeIndex == parent->imax) {
+        cout << "index out of bound";
+        throw(exception());
+    }
+
     parent->imax++;
-    memcpy(parent->kwds + nodeIndex + 2, parent->kwds + nodeIndex + 1, (parent->imax - nodeIndex - 2) * sizeof(kwd_t));
-    memcpy(parent->children + nodeIndex + 2, parent->children + nodeIndex + 1, (parent->imax - nodeIndex - 2) * sizeof(node_t*));
+    for(int i = parent->imax - 1; i > nodeIndex + 1; --i) {
+        parent->kwds[i] = parent->kwds[i - 1];
+        parent->children[i] = parent->children[i - 1];
+    }
 
     parent->kwds[nodeIndex] = nodeSubTreeSize;
 
     parent->kwds[nodeIndex + 1] = newNodeSubTreeSize;
     parent->children[nodeIndex + 1] = resNewNode;
     resNewNode->parent = parent;
+
 
     if (parent->imax > MAX_NODE_SIZE) {
         rebalance_((node_t*)parent);
