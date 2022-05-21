@@ -9,7 +9,7 @@
 #define INTERNAL true
 #define LEAF false
 #define DEFAULT_LOWER -2
-#define DEFAULT_UPPER 1
+#define DEFAULT_UPPER 2
 #define INVAL 0
 
 struct internal_node_t;
@@ -85,6 +85,7 @@ class fhbpt {
     cd_t* insert_(node_t* node, pos_t pos, ct_t ct);
     void rebalance_(node_t* node);
     std::string traverse_();
+    std::string traverseGraphviz_();
 };
 
 #endif
