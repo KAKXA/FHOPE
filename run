@@ -1,0 +1,18 @@
+#!/bin/bash
+rm build/test ser_dot/* cli_dot/* ser_img/* cli_img/*
+g++ -o build/test test.cpp fhope.cpp fhbpt.cpp;
+build/test
+
+dotSub='.dot'
+imgSub='.png'
+
+serDotPre='ser_dot/'
+cliDotPre='cli_dot/'
+cliImgPre='cli_img/'
+serImgPre='ser_img/'
+
+for (( i=0;i<20;++i ))
+do
+    dot $cliDotPre$i$dotSub -T png -o $cliImgPre$i$imgSub
+    dot $serDotPre$i$dotSub -T png -o $serImgPre$i$imgSub
+done  
