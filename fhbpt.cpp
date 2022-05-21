@@ -1,8 +1,10 @@
 #include "fhbpt.h"
 #include <map>
+#include <functional>
 #include <queue>
 #include <string>
 #include <iostream>
+#include <sstream>
 #include <math.h>
 using namespace std;
 
@@ -269,6 +271,99 @@ string fhbpt::traverse_() {
     return s;
 }
 
+struct traverseNode_t {
+    // bool nodeAttr;
+    unsigned nodeId;
+    node_t* node;
+    unsigned* childrenId;
+
+    traverseNode_t(unsigned nodeId_, node_t* node_, unsigned* childrenId_) {
+        nodeId = nodeId_;
+        node = node_;
+        childrenId = childrenId_;
+    }
+};
+
+string fhbpt::traverseGraphviz_() {
+    vector<traverseNode_t*> nodeList;
+    vector<pair<int, int>> edgeList;
+    unsigned id = 0;
+    function<void(node_t*, unsigned)> dfs = [&](node_t* cur_, unsigned curId) {
+        if (cur_->node_attr == INTERNAL) {
+            internal_node_t* cur = (internal_node_t*) cur_;
+            unsigned* childrenId = new unsigned[cur->imax];
+            nodeList.push_back(new traverseNode_t(curId, cur_, childrenId));
+            for(int i = 0; i < cur->imax; ++i) {
+                unsigned tmpId = id++;
+                childrenId[i] = tmpId;
+                edgeList.push_back(make_pair(curId, tmpId));
+                dfs(cur->children[i], tmpId);
+            }
+        } else {
+            nodeList.push_back(new traverseNode_t(curId, cur_, NULL));
+        }
+    };
+    dfs(root, id++);
+
+    stringstream ss;
+    ss << "digraph g {" << endl;
+    ss << "node [shape = record,height=.1];" << endl;
+
+    for(traverseNode_t* node: nodeList) {
+        ss << "    ";
+        ss << node->nodeId;
+        ss << "[label = \"";
+        if (node->node->node_attr == INTERNAL) {
+            // 0[label = "<1>10|<2>20"];
+            internal_node_t* inode = (internal_node_t*) node->node;
+            for(int i = 0; i < inode->imax - 1; ++i) {
+                ss << "<";
+                ss << node->childrenId[i];
+                ss << ">";
+                ss << inode->kwds[i];
+                ss << "|";
+            }
+            ss << "<";
+            ss << node->childrenId[inode->imax - 1];
+            ss << ">";
+            ss << inode->kwds[inode->imax - 1];
+        } else {
+            // 1[label = "{ct1|1}|{ct2|3}|{ct3|5}"];
+            // 2[label = "{ct4|9}|{ct5|10}|{ct6|11}"];
+            leaf_t* lnode = (leaf_t*) node->node;
+            for(int i = 0; i < lnode->imax - 1; ++i) {
+                ss << "{";
+                ss << lnode->cds[i];
+                ss << "|";
+                ss << lnode->cts[i];
+                ss << "}|";
+            }
+            ss << "{";
+            ss << lnode->cds[lnode->imax - 1];
+            ss << "|";
+            ss << lnode->cts[lnode->imax - 1];
+            ss << "}";
+        }
+        ss << "\"];" << endl;
+    }
+    // "0":1 -> "1"
+    // "0":2 -> "2"
+    ss << endl;
+    for(auto edge: edgeList) {
+        ss << "    ";
+        ss << "\"";
+        ss << edge.first;
+        ss << "\":";
+        ss << edge.second;
+        ss << " -> \"";
+        ss << edge.second;
+        ss << "\"" << endl;
+    }
+    ss << "}";
+    return ss.str();
+}
+
 string fhbpt::traverse() {
-    return traverse_();
+    // cout << traverse_() << endl;
+    return traverseGraphviz_();
 }
