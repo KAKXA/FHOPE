@@ -50,9 +50,24 @@ cd_t fhope::search(int pt) {
 
 string fhope::cliTraverse() {
     stringstream ss;
+    ss << "digraph g {" << endl;
+    ss << "node [shape = record,height=.1];" << endl;
+    // digraph g {
+    // node [shape = record,height=.1];
+    //     0[label = "{plaintext|1|3|4}|{count|4|5|6}"];
+    // }
+    ss << "    0[label = \"{plaintext";
     for(auto kv: stCli) {
-        ss << kv.first << ":" << kv.second << endl;
+        ss << "|";
+        ss << kv.first;
     }
+    ss << "}|{count";
+    for(auto kv: stCli) {
+        ss << "|";
+        ss << kv.second;
+    }
+    ss << "}\"];" << endl;
+    ss << "}" << endl;
     return ss.str();
 }
 string fhope::serTraverse() {
