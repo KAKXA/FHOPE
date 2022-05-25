@@ -13,7 +13,9 @@ int main () {
     // srand(time(NULL) % UINT32_MAX);
     for(int i = 0; i < 20; ++i) {
 
-        f.enc(rand() % 5);
+        int rt = rand() % 5;
+        int rank = f.enc(rt);
+        cout << "Insert " << rt << " as at position " << rank << endl;
 
         ofstream ofCli("cli_dot/" + to_string(i) + ".dot");
         ofCli << f.cliTraverse() << endl;
