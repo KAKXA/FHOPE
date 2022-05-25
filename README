@@ -1,0 +1,18 @@
+# FHOPE 频率隐藏的保序加密
+- 运行环境: Linux
+- 依赖:
+    - g++, 在Ubuntu下可通过sudo apt install g++安装 
+    - graphviz dot, 在Ubuntu下可通过sudo apt install graphviz安装
+- 运行方式: 在本文件同级目录下,运行./run
+
+- 文件介绍
+    - fhbpt.h: 保序编码树(结构类似B+树)的头文件
+    - fhbpt.cpp: 保序编码树的实现(只在内存中进行增添与查找,不写入磁盘)
+    - fhope.h: 服务端的保序编码树和客户端维护的状态表放在一个fhope对象中,fhope.h是该对象的头文件
+    - fhope.cpp: fhope对象的各方法的实现
+    - predefined.h: 定义了一些类型变量
+    - test.cpp: 构造一组数据,加密存储到fhope中,以及在fhope进行查找
+    - run:
+        - 运行./run,编译运行test.cpp中的main函数
+        - 每插入一个数据项,把当前的fhbpt和客户端table的表格以图片的形式存储到ser_img和cli_img目录下
+- 参考论文: Li, Dongjie & Lv, Siyi & Huang, Yanyu & Liu, Yijing & Li, Tong & Liu, Zheli & Guo, Liang. (2021). Frequency-hiding order-preserving encryption with small client storage. Proceedings of the VLDB Endowment. 14. 3295-3307. 10.14778/3484224.3484228. 
