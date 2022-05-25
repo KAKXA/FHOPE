@@ -17,7 +17,7 @@ ct_t rndEnc(int pt) {
 int rndDec(ct_t ct) {
     return stoi(ct.substr(0, ct.find("\u2091")));
 }
-ct_t fhope::enc(int pt) {
+int fhope::enc(int pt) {
     ct_t ct = rndEnc(pt);
     int lessCount = 0;
     for(auto itr = stCli.begin(); itr != stCli.upper_bound(pt - 1); ++itr) {
@@ -34,7 +34,7 @@ ct_t fhope::enc(int pt) {
     }
     // server
     stSer.insert(pos, ct);
-    return ct;
+    return pos;
 }
 int fhope::dec(ct_t ct) {
     return rndDec(ct);

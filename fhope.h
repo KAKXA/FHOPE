@@ -6,7 +6,7 @@ using namespace std;
 class fhope {
     public:
     fhope() {}
-    ct_t enc(int pt);
+    int enc(int pt);
     int dec(ct_t ct);
     cd_t search(int pt);
     string cliTraverse();
